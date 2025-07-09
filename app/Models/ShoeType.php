@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Size extends Model
+class ShoeType extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'sizeId';
+    protected $primaryKey = 'typeId';
     public $timestamps = false;
 
     /**

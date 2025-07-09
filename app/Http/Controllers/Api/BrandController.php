@@ -36,9 +36,15 @@ class BrandController extends Controller
     /**
      * Lấy thông tin chi tiết một thương hiệu.
      */
-    public function show(Brand $brand)
+    public function show($brandId)
     {
-        return new BrandResource($brand);
+        // Sử dụng findOrFail để tìm thương hiệu theo id.
+        // Nếu không tìm thấy, Laravel sẽ tự động hiển thị trang 404.
+        $brand = Brand::findOrFail($brandId);
+
+        // Trả về view 'brands.show' và truyền dữ liệu của thương hiệu vừa tìm được
+        return response()->json($brand, Response::HTTP_CREATED);
+        // return view('brands.show', compact('brand'));
     }
 
     /**

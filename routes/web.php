@@ -8,12 +8,20 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductVariantController;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('home');
+})->name('home');
 
-Route::get('/api/brands', [BrandController::class, 'index']);
+// Sửa route '/products' để sử dụng ProductController
+Route::get('/products', [ProductController::class, 'index'])->name('products');
 
 
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+// Route::get('/api/brands', [BrandController::class, 'index']);
+
+// Route::get('/api/brands/{brandId}', [BrandController::class, 'show']);
 // Route::apiResource('brands', BrandController::class);
 // Route::apiResource('categories', CategoryController::class);
 // Route::apiResource('products', ProductController::class);

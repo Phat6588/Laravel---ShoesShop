@@ -8,11 +8,37 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductVariant extends Model
 {
-    protected $table = 'product_variants';
-    protected $fillable = ['product_id', 'color_id', 'size_id', 'price', 'stock_quantity', 'image_url'];
+    use HasFactory;
+
+    protected $primaryKey = 'variantId';
+    public $timestamps = false;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'productId',
+        'colorId',
+        'sizeId',
+        'price',
+        'stock',
+        'image_url',
+    ];
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'productId');
+    }
+    
+    public function color(): BelongsTo
+    {
+        return $this->belongsTo(Color::class, 'colorId');
+    }
+
+    public function size(): BelongsTo
+    {
+        return $this->belongsTo(Size::class, 'sizeId');
     }
 }

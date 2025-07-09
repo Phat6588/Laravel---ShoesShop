@@ -10,20 +10,34 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Product extends Model
 {
     use HasFactory;
-    protected $fillable = ['product_name', 'description', 'brand_id', 'category_id'];
+
+    protected $primaryKey = 'productId';
+    public $timestamps = false;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'description',
+        'brandId',
+        'typeId',
+    ];
 
     public function brand(): BelongsTo
     {
-        return $this->belongsTo(Brand::class);
+        return $this->belongsTo(Brand::class, 'brandId');
     }
 
-    public function category(): BelongsTo
+    public function shoeType(): BelongsTo
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(ShoeType::class, 'typeId');
     }
 
     public function variants(): HasMany
     {
-        return $this->hasMany(ProductVariant::class);
+        return $this->hasMany(ProductVariant::class, 'productId');
     }
 }
