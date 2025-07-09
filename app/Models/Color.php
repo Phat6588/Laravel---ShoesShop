@@ -11,6 +11,7 @@ class Color extends Model
 
     protected $primaryKey = 'colorId';
     public $timestamps = false;
+    protected $table = 'Colors'; // Đảm bảo tên bảng chính xác
 
     /**
      * The attributes that are mass assignable.
@@ -19,5 +20,6 @@ class Color extends Model
      */
     protected $fillable = [
         'name',
+        'color_code', // <-- THÊM DÒNG NÀY
     ];
 }
