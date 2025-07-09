@@ -1,0 +1,213 @@
+
+-- Bảng `Brands` (Thương hiệu)
+CREATE TABLE `Brands` (
+  `brandId` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `image_url` VARCHAR(2048) NULL,
+  PRIMARY KEY (`brandId`)
+);
+
+-- Bảng `ShoeTypes` (Kiểu giày)
+CREATE TABLE `ShoeTypes` (
+  `typeId` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`typeId`)
+);
+
+-- Bảng `Colors` (Màu sắc)
+CREATE TABLE `Colors` (
+  `colorId` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL UNIQUE,
+  PRIMARY KEY (`colorId`)
+);
+
+-- Bảng `Sizes` (Kích cỡ)
+CREATE TABLE `Sizes` (
+  `sizeId` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL UNIQUE,
+  PRIMARY KEY (`sizeId`)
+);
+
+-- Bảng `Products` (Sản phẩm giày)
+CREATE TABLE `Products` (
+  `productId` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `description` TEXT NULL,
+  `brandId` BIGINT UNSIGNED NOT NULL,
+  `typeId` BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`productId`),
+  FOREIGN KEY (`brandId`) REFERENCES `Brands`(`brandId`) ON DELETE CASCADE,
+  FOREIGN KEY (`typeId`) REFERENCES `ShoeTypes`(`typeId`) ON DELETE CASCADE
+);
+
+-- Bảng `ProductVariants` (Biến thể sản phẩm: một đôi giày cụ thể với màu và size)
+CREATE TABLE `ProductVariants` (
+  `variantId` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `price` DECIMAL(10, 2) NOT NULL,
+  `image_url` VARCHAR(2048) NULL,
+  `stock` INT UNSIGNED NOT NULL DEFAULT 0,
+  `productId` BIGINT UNSIGNED NOT NULL,
+  `colorId` BIGINT UNSIGNED NOT NULL,
+  `sizeId` BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`variantId`),
+  UNIQUE KEY `product_color_size_unique` (`productId`, `colorId`, `sizeId`),
+  FOREIGN KEY (`productId`) REFERENCES `Products`(`productId`) ON DELETE CASCADE,
+  FOREIGN KEY (`colorId`) REFERENCES `Colors`(`colorId`) ON DELETE CASCADE,
+  FOREIGN KEY (`sizeId`) REFERENCES `Sizes`(`sizeId`) ON DELETE CASCADE
+);
+
+-- Bảng `Orders` (Đơn hàng) - Lưu thông tin khách hàng trực tiếp
+CREATE TABLE `Orders` (
+  `orderId` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `customerName` VARCHAR(255) NOT NULL,
+  `customerEmail` VARCHAR(255) NOT NULL,
+  `customerPhone` VARCHAR(20) NOT NULL,
+  `shippingAddress` VARCHAR(500) NOT NULL,
+  `totalPrice` DECIMAL(12, 2) NOT NULL,
+  `status` VARCHAR(50) DEFAULT 'pending', -- 'pending', 'processing', 'shipped', 'delivered', 'cancelled'
+  `createAt` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`orderId`)
+);
+
+-- Bảng `OrderDetails` (Chi tiết đơn hàng)
+CREATE TABLE `OrderDetails` (
+  `orderDetailId` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `orderId` BIGINT UNSIGNED NOT NULL,
+  `variantId` BIGINT UNSIGNED NOT NULL,
+  `quantity` INT UNSIGNED NOT NULL,
+  `price` DECIMAL(10, 2) NOT NULL, -- Giá tại thời điểm mua
+  PRIMARY KEY (`orderDetailId`),
+  FOREIGN KEY (`orderId`) REFERENCES `Orders`(`orderId`) ON DELETE CASCADE,
+  FOREIGN KEY (`variantId`) REFERENCES `ProductVariants`(`variantId`) ON DELETE CASCADE
+);
+
+
+-- =================================================================
+-- III. CHÈN DỮ LIỆU MẪU
+-- =================================================================
+
+-- `Brands` (10 records)
+INSERT INTO `Brands` (`name`, `image_url`) VALUES
+('Nike', 'url_to_nike_logo.png'),
+('Adidas', 'url_to_adidas_logo.png'),
+('Puma', 'url_to_puma_logo.png'),
+('Converse', 'url_to_converse_logo.png'),
+('Vans', 'url_to_vans_logo.png'),
+('Biti\'s', 'url_to_bitis_logo.png'),
+('New Balance', 'url_to_newbalance_logo.png'),
+('ASICS', 'url_to_asics_logo.png'),
+('Dr. Martens', 'url_to_drmartens_logo.png'),
+('Ananas', 'url_to_ananas_logo.png');
+
+-- `ShoeTypes` (8 records)
+INSERT INTO `ShoeTypes` (`name`) VALUES
+('Sneaker'),
+('Giày chạy bộ (Running)'),
+('Giày bóng rổ (Basketball)'),
+('Bốt (Boots)'),
+('Giày Tây (Dress Shoes)'),
+('Sandal'),
+('Giày lười (Slip-on)'),
+('Giày trượt ván (Skate)');
+
+-- `Colors` (10 records)
+INSERT INTO `Colors` (`name`) VALUES
+('Đen'), ('Trắng'), ('Xám'), ('Xanh Dương'), ('Đỏ'),
+('Beige'), ('Xanh Lá'), ('Nâu'), ('Vàng'), ('Cam');
+
+-- `Sizes` (8 records)
+INSERT INTO `Sizes` (`name`) VALUES
+('38'), ('39'), ('40'), ('41'), ('42'), ('43'), ('44'), ('45');
+
+-- `Products` (20 records)
+INSERT INTO `Products` (`name`, `description`, `brandId`, `typeId`) VALUES
+('Nike Air Force 1 \'07', 'Mẫu sneaker kinh điển, biểu tượng của Nike.', 1, 1),
+('Adidas Ultraboost Light', 'Giày chạy bộ siêu nhẹ với đệm Boost hoàn trả năng lượng.', 2, 2),
+('Converse Chuck 70 Classic', 'Phiên bản cao cấp của dòng Chuck Taylor All Star.', 4, 1),
+('Vans Old Skool', 'Giày trượt ván với sọc jazz đặc trưng.', 5, 8),
+('Biti\'s Hunter X', 'Dòng sneaker hiện đại được yêu thích của Biti\'s.', 6, 1),
+('Dr. Martens 1460', 'Mẫu bốt 8 lỗ huyền thoại, bền bỉ và cá tính.', 9, 4),
+('New Balance 550', 'Thiết kế bóng rổ retro đang thịnh hành trở lại.', 7, 3),
+('ASICS Gel-Kayano 30', 'Giày chạy bộ ổn định hàng đầu cho người cần hỗ trợ.', 8, 2),
+('Puma Suede Classic', 'Mẫu giày da lộn không bao giờ lỗi mốt.', 3, 1),
+('Ananas Urbas', 'Dòng sneaker vải canvas từ thương hiệu Việt Nam.', 10, 1),
+('Nike Dunk Low', 'Sneaker bóng rổ retro với nhiều phối màu đa dạng.', 1, 3),
+('Adidas Samba OG', 'Mẫu giày classic của Adidas, phù hợp nhiều phong cách.', 2, 1),
+('Vans Slip-On Checkerboard', 'Giày lười kinh điển với họa tiết caro.', 5, 7),
+('New Balance 990v6', 'Dòng giày chạy bộ cao cấp, biểu tượng của New Balance.', 7, 2),
+('Nike Air Jordan 1 Mid', 'Phiên bản cổ lửng của dòng giày bóng rổ huyền thoại.', 1, 3),
+('Converse One Star', 'Một mẫu giày classic khác của Converse.', 4, 1),
+('Biti\'s Hunter Street', 'Phiên bản Hunter cho phong cách đường phố.', 6, 1),
+('Puma RS-X', 'Thiết kế sneaker hầm hố, hiện đại.', 3, 1),
+('ASICS Novablast 4', 'Giày chạy bộ đa dụng, êm ái và nảy.', 8, 2),
+('Dr. Martens Jadon', 'Phiên bản đế độn cá tính của dòng 1460.', 9, 4);
+
+-- `ProductVariants` (20 records)
+INSERT INTO `ProductVariants` (`productId`, `colorId`, `sizeId`, `price`, `stock`, `image_url`) VALUES
+(1, 2, 4, 2990000.00, 120, 'url_to_af1_white_41.jpg'),
+(1, 1, 4, 2990000.00, 95, 'url_to_af1_black_41.jpg'),
+(2, 1, 3, 4800000.00, 50, 'url_to_ultraboost_black_40.jpg'),
+(3, 1, 3, 1800000.00, 200, 'url_to_chuck70_black_40.jpg'),
+(4, 1, 3, 1700000.00, 180, 'url_to_vans_oldskool_black_40.jpg'),
+(5, 7, 4, 950000.00, 110, 'url_to_hunterx_green_41.jpg'),
+(6, 1, 5, 4500000.00, 40, 'url_to_drmartens_1460_black_42.jpg'),
+(7, 2, 3, 3200000.00, 60, 'url_to_nb550_white_40.jpg'),
+(8, 4, 5, 4200000.00, 25, 'url_to_kayano30_blue_42.jpg'),
+(9, 1, 4, 1500000.00, 75, 'url_to_pumasuede_black_41.jpg'),
+(10, 6, 2, 490000.00, 130, 'url_to_ananas_urbas_beige_39.jpg'),
+(11, 2, 4, 3200000.00, 80, 'url_to_dunklow_white_41.jpg'),
+(12, 1, 3, 2500000.00, 90, 'url_to_samba_black_40.jpg'),
+(13, 1, 5, 1600000.00, 100, 'url_to_slipon_checker_42.jpg'),
+(14, 3, 4, 5500000.00, 20, 'url_to_nb990_grey_41.jpg'),
+(15, 5, 5, 3800000.00, 60, 'url_to_jordan1_red_42.jpg'),
+(16, 2, 3, 1750000.00, 70, 'url_to_onestar_white_40.jpg'),
+(17, 1, 4, 890000.00, 150, 'url_to_hunterstreet_black_41.jpg'),
+(18, 3, 5, 2800000.00, 45, 'url_to_pumarsx_grey_42.jpg'),
+(20, 1, 5, 5200000.00, 30, 'url_to_jadon_black_42.jpg');
+
+-- `Orders` (20 records)
+INSERT INTO `Orders` (`customerName`, `customerEmail`, `customerPhone`, `shippingAddress`, `totalPrice`, `status`) VALUES
+('Trần Văn An', 'an.tran@guest.com', '0901234567', '123 Đường ABC, Phường 1, Quận 1, TP.HCM', 2990000.00, 'delivered'),
+('Lê Thị Bình', 'binh.le@guest.com', '0902345678', '456 Đường XYZ, Phường 2, Quận 3, TP.HCM', 4800000.00, 'shipped'),
+('Phạm Văn Cường', 'cuong.pham@guest.com', '0903456789', '789 Đường DEF, Phường 3, Quận 5, TP.HCM', 1800000.00, 'processing'),
+('Nguyễn Thị Dung', 'dung.nguyen@guest.com', '0904567890', '101 Đường GHI, Phường 4, Quận 10, TP.HCM', 1700000.00, 'pending'),
+('Vũ Văn Em', 'em.vu@guest.com', '0905678901', '112 Đường KLM, Phường 5, Quận Bình Thạnh, TP.HCM', 950000.00, 'delivered'),
+('Hoàng Thị Giang', 'giang.hoang@guest.com', '0906789012', '113 Đường NOP, Phường 6, Quận Phú Nhuận, TP.HCM', 4500000.00, 'cancelled'),
+('Đặng Văn Hải', 'hai.dang@guest.com', '0907890123', '114 Đường QRS, Phường 7, Quận 7, TP.HCM', 3200000.00, 'delivered'),
+('Bùi Thị Hương', 'huong.bui@guest.com', '0908901234', '115 Đường TUV, Phường 8, TP. Thủ Đức', 4200000.00, 'shipped'),
+('Ngô Văn Kiên', 'kien.ngo@guest.com', '0909012345', '116 Đường WXY, Phường 9, Quận Gò Vấp, TP.HCM', 1500000.00, 'delivered'),
+('Mai Thị Lan', 'lan.mai@guest.com', '0912123456', '117 Đường Z, Phường 10, Quận Tân Bình, TP.HCM', 490000.00, 'processing'),
+('Lý Văn Mạnh', 'manh.ly@guest.com', '0913234567', '212 Đường A, Quận 1, TP.HCM', 3200000.00, 'delivered'),
+('Dương Thị Nga', 'nga.duong@guest.com', '0914345678', '313 Đường B, Quận 3, TP.HCM', 2500000.00, 'shipped'),
+('Trịnh Văn Oanh', 'oanh.trinh@guest.com', '0915456789', '414 Đường C, Quận 5, TP.HCM', 1600000.00, 'delivered'),
+('Hồ Thị Phượng', 'phuong.ho@guest.com', '0916567890', '515 Đường D, Quận 10, TP.HCM', 5500000.00, 'shipped'),
+('Đỗ Văn Quân', 'quan.do@guest.com', '0917678901', '616 Đường E, Quận Bình Thạnh, TP.HCM', 3800000.00, 'processing'),
+('Phan Thị Quỳnh', 'quynh.phan@guest.com', '0918789012', '717 Đường F, Quận Phú Nhuận, TP.HCM', 1750000.00, 'delivered'),
+('Vương Văn Sơn', 'son.vuong@guest.com', '0919890123', '818 Đường G, Quận 7, TP.HCM', 890000.00, 'pending'),
+('Lưu Thị Thảo', 'thao.luu@guest.com', '0921901234', '919 Đường H, TP. Thủ Đức', 2800000.00, 'delivered'),
+('Đinh Văn Tuấn', 'tuan.dinh@guest.com', '0922012345', '121 Đường I, Quận Gò Vấp, TP.HCM', 5200000.00, 'shipped'),
+('Tô Thị Uyên', 'uyen.to@guest.com', '0923123456', '232 Đường K, Quận Tân Bình, TP.HCM', 7790000.00, 'delivered');
+
+-- `OrderDetails` (21 records)
+INSERT INTO `OrderDetails` (`orderId`, `variantId`, `quantity`, `price`) VALUES
+(1, 1, 1, 2990000.00),
+(2, 3, 1, 4800000.00),
+(3, 4, 1, 1800000.00),
+(4, 5, 1, 1700000.00),
+(5, 6, 1, 950000.00),
+(6, 7, 1, 4500000.00),
+(7, 8, 1, 3200000.00),
+(8, 9, 1, 4200000.00),
+(9, 10, 1, 1500000.00),
+(10, 11, 1, 490000.00),
+(11, 12, 1, 3200000.00),
+(12, 13, 1, 2500000.00),
+(13, 14, 1, 1600000.00),
+(14, 15, 1, 5500000.00),
+(15, 16, 1, 3800000.00),
+(16, 17, 1, 1750000.00),
+(17, 18, 1, 890000.00),
+(18, 19, 1, 2800000.00),
+(19, 20, 1, 5200000.00),
+(20, 1, 1, 2990000.00),
+(20, 10, 1, 4800000.00);
