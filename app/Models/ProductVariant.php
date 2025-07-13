@@ -4,42 +4,30 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductVariant extends Model
 {
     use HasFactory;
 
     /**
-     * Chỉ định tên bảng trong cơ sở dữ liệu.
+     * Tên bảng trong database mà model này đại diện.
+     *
      * @var string
      */
-    protected $table = 'ProductVariants'; // <-- THÊM DÒNG NÀY ĐỂ SỬA LỖI
+    protected $table = 'ProductVariants';
 
-    protected $primaryKey = 'variantId';
-    public $timestamps = false;
-
-    protected $fillable = [
-        'productId',
-        'colorId',
-        'sizeId',
-        'price',
-        'stock',
-        'image_url',
-    ];
-
-    public function product(): BelongsTo
+    public function product()
     {
-        return $this->belongsTo(Product::class, 'productId');
-    }
-    
-    public function color(): BelongsTo
-    {
-        return $this->belongsTo(Color::class, 'colorId');
+        return $this->belongsTo(Product::class);
     }
 
-    public function size(): BelongsTo
+    public function color()
     {
-        return $this->belongsTo(Size::class, 'sizeId');
+        return $this->belongsTo(Color::class);
+    }
+
+    public function size()
+    {
+        return $this->belongsTo(Size::class);
     }
 }

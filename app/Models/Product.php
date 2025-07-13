@@ -4,40 +4,30 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'productId';
-
     /**
-     * Tắt chức năng timestamp tự động của Eloquent.
-     * @var bool
+     * Tên bảng trong database mà model này đại diện.
+     *
+     * @var string
      */
-    public $timestamps = false; // Thêm dòng này
+    protected $table = 'Products';
 
-    protected $fillable = [
-        'name',
-        'description',
-        'brandId',
-        'typeId',
-    ];
-
-    public function brand(): BelongsTo
+    public function brand()
     {
-        return $this->belongsTo(Brand::class, 'brandId');
+        return $this->belongsTo(Brand::class);
     }
 
-    public function shoeType(): BelongsTo
+    public function shoeType()
     {
-        return $this->belongsTo(ShoeTypes::class, 'typeId');
+        return $this->belongsTo(ShoeTypes::class, 'shoe_type_id');
     }
 
-    public function variants(): HasMany
+    public function variants()
     {
-        return $this->hasMany(ProductVariant::class, 'productId');
+        return $this->hasMany(ProductVariant::class);
     }
 }

@@ -1,18 +1,20 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\BrandController;
-use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\ProductVariantController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductVariantController;
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
 
-// Sửa route '/products' để sử dụng ProductController
-Route::get('/products', [ProductController::class, 'index'])->name('products');
+// Route cho trang chủ, trỏ đến HomeController
+// Route cho trang chủ, trỏ đến HomeController
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Route cho trang sản phẩm, trỏ đến ProductController
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
 
 // Route::get('/', function () {
