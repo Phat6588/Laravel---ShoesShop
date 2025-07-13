@@ -1,87 +1,61 @@
 @extends('layouts.app')
 
-@section('title', 'Trang Chủ')
-
 @section('content')
-    <!-- Main-body -->
-    <div class="main-body">
-        <div class="container">
-            <!-- New-product -->
-            <div class="new-product">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="section-title">
-                            <h2>Sản phẩm mới</h2>
+<div class="container">
+    {{-- Phần sản phẩm bán chạy nhất --}}
+    <section class="mt-5">
+        <h2 class="text-center mb-4">Sản Phẩm Bán Chạy</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
+            @forelse ($bestSellers as $product)
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <img src="{{ $product->image ?? 'https://placehold.co/600x700/EFEFEF/AAAAAA&text=No+Image' }}" class="card-img-top" alt="{{ $product->name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $product->name }}</h5>
+                            <p class="card-text fw-bold text-danger">{{ number_format($product->price, 0, ',', '.') }} VNĐ</p>
+                            <a href="#" class="btn btn-outline-primary stretched-link">Xem chi tiết</a>
                         </div>
                     </div>
-                    @if(isset($newProducts) && $newProducts->count() > 0)
-                        @foreach($newProducts as $product)
-                            <div class="col-md-3 col-sm-6">
-                                <div class="product-item">
-                                    <div class="product-item-image">
-                                        <a href="{{ route('products.show', $product) }}">
-                                            <img src="https://placehold.co/600x600/EFEFEF/333?text={{ urlencode($product->name) }}" alt="{{ $product->name }}" class="img-responsive">
-                                        </a>
-                                    </div>
-                                    <div class="product-item-body">
-                                        <div class="product-item-title">
-                                            <a href="{{ route('products.show', $product) }}">
-                                                <h3>{{ $product->name }}</h3>
-                                                <p>Kiểu giày: {{ optional($product->shoeType)->name }}</p>
-                                            </a>
-                                        </div>
-                                        <div class="product-item-price">
-                                            <span>{{ number_format(optional($product->variants->first())->price ?? 0, 0, ',', '.') }} VND</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    @else
-                        <p class="col-12">Chưa có sản phẩm mới.</p>
-                    @endif
                 </div>
-            </div>
-            <!-- End-new-product -->
-
-            <!-- product-featured -->
-            <div class="product-featured">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="section-title">
-                            <h2>Sản phẩm nổi bật</h2>
-                        </div>
-                    </div>
-                     @if(isset($featuredProducts) && $featuredProducts->count() > 0)
-                        @foreach($featuredProducts as $product)
-                            <div class="col-md-3 col-sm-6">
-                                <div class="product-item">
-                                    <div class="product-item-image">
-                                        <a href="{{ route('products.show', $product) }}">
-                                             <img src="https://placehold.co/600x600/EFEFEF/333?text={{ urlencode($product->name) }}" alt="{{ $product->name }}" class="img-responsive">
-                                        </a>
-                                    </div>
-                                    <div class="product-item-body">
-                                        <div class="product-item-title">
-                                            <a href="{{ route('products.show', $product) }}">
-                                                <h3>{{ $product->name }}</h3>
-                                                <p>Kiểu giày: {{ optional($product->shoeType)->name }}</p>
-                                            </a>
-                                        </div>
-                                        <div class="product-item-price">
-                                            <span>{{ number_format(optional($product->variants->first())->price ?? 0, 0, ',', '.') }} VND</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    @else
-                        <p class="col-12">Chưa có sản phẩm nổi bật.</p>
-                    @endif
+            @empty
+                <div class="col-12">
+                    <p class="text-center text-muted">Hiện chưa có sản phẩm bán chạy nào.</p>
                 </div>
-            </div>
-            <!-- End-product-featured -->
+            @endforelse
         </div>
-    </div>
-    <!-- End-main-body -->
+        {{-- Phân trang cho sản phẩm bán chạy --}}
+        <div class="d-flex justify-content-center mt-4">
+            {{ $bestSellers->withQueryString()->links() }}
+        </div>
+    </section>
+
+    <hr class="my-5">
+
+    {{-- Phần sản phẩm mới --}}
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Sản Phẩm Mới</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
+            @forelse ($newProducts as $product)
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <img src="{{ $product->image ?? 'https://placehold.co/600x700/EFEFEF/AAAAAA&text=No+Image' }}" class="card-img-top" alt="{{ $product->name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $product->name }}</h5>
+                            <p class="card-text fw-bold text-danger">{{ number_format($product->price, 0, ',', '.') }} VNĐ</p>
+                            <a href="#" class="btn btn-outline-primary stretched-link">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="col-12">
+                    <p class="text-center text-muted">Hiện chưa có sản phẩm mới nào.</p>
+                </div>
+            @endforelse
+        </div>
+        {{-- Phân trang cho sản phẩm mới --}}
+        <div class="d-flex justify-content-center mt-4">
+            {{ $newProducts->withQueryString()->links() }}
+        </div>
+    </section>
+</div>
 @endsection

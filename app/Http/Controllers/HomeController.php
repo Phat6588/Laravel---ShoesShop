@@ -4,34 +4,50 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 
-/**
- * Controller cho trang chủ.
- *
- * Đã sửa các lỗi sau:
- * 1. `Product::latest()` sẽ gây lỗi vì bảng 'Products' không có cột 'created_at'.
- * Đã thay thế bằng `orderBy('productId', 'desc')` để lấy các sản phẩm mới nhất.
- * 2. `where('featured', true)` sẽ gây lỗi vì bảng 'Products' không có cột 'featured'.
- * Đã thay thế bằng `inRandomOrder()` để lấy sản phẩm ngẫu nhiên làm "sản phẩm nổi bật" (chỉ để demo).
- * Để có chức năng thực sự, bạn nên thêm cột 'featured' (boolean) vào bảng 'Products'.
- * 3. Thêm eager loading (`with`) để tối ưu hóa truy vấn, tránh vấn đề N+1 query.
- */
 class HomeController extends Controller
 {
+    /**
+     * Hiển thị trang chủ với sản phẩm bán chạy và sản phẩm mới.
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
-        // Lấy 8 sản phẩm mới nhất
-        $newProducts = Product::with(['brand', 'variants'])
-                              ->orderBy('productId', 'desc')
-                              ->take(8)
-                              ->get();
+        // --- Lấy sản phẩm bán chạy ---
+        // Đã cập nhật để sử dụng bảng 'OrderDetails'
+        $bestSellingProductIds = DB::table('OrderDetails')
+            ->join('ProductVariants', 'OrderDetails.product_variant_id', '=', 'ProductVariants.id')
+            ->join('Products', 'ProductVariants.product_id', '=', 'Products.id')
+            ->select('Products.id', DB::raw('SUM(OrderDetails.quantity) as total_quantity'))
+            ->groupBy('Products.id')
+            ->orderByDesc('total_quantity')
+            ->take(15)
+            ->pluck('id')
+            ->toArray();
 
-        // Lấy 8 sản phẩm ngẫu nhiên làm sản phẩm nổi bật
-        $featuredProducts = Product::with(['brand', 'variants'])
-                                   ->inRandomOrder()
-                                   ->take(8)
-                                   ->get();
+        // Khởi tạo Paginator rỗng để tránh lỗi nếu không có sản phẩm
+        $bestSellers = new LengthAwarePaginator([], 0, 5, 1, [
+            'path' => request()->url(),
+            'pageName' => 'bestsellers_page',
+        ]);
 
-        return view('home', compact('newProducts', 'featuredProducts'));
+        // Nếu có sản phẩm bán chạy, lấy và phân trang 5 sản phẩm/trang
+        if (!empty($bestSellingProductIds)) {
+            $bestSellers = Product::whereIn('id', $bestSellingProductIds)
+                ->orderByRaw(DB::raw("FIELD(id, " . implode(',', $bestSellingProductIds) . ")"))
+                ->paginate(5, ['*'], 'bestsellers_page');
+        }
+
+        // --- Lấy sản phẩm mới ---
+        $newestProductIds = Product::latest()->take(15)->pluck('id')->toArray();
+        
+        $newProducts = Product::whereIn('id', $newestProductIds)
+            ->latest()
+            ->paginate(5, ['*'], 'new_products_page');
+
+        return view('home', compact('bestSellers', 'newProducts'));
     }
 }
