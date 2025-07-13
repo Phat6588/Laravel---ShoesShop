@@ -13,8 +13,10 @@ use App\Http\Controllers\ProductVariantController;
 // Route cho trang chủ, trỏ đến HomeController
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Route cho trang sản phẩm, trỏ đến ProductController
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+
+// Route cho trang chi tiết sản phẩm
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
 
 // Route::get('/', function () {

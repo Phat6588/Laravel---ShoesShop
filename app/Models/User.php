@@ -6,33 +6,45 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * Model cho bảng Users (Quản trị viên).
+ *
+ * Đã sửa các lỗi sau:
+ * 1. Cấu hình lại toàn bộ Model để khớp với bảng 'Users' trong SQL Script thay vì bảng 'users' mặc định của Laravel.
+ * 2. Chỉ định bảng 'Users', khóa chính 'userId'.
+ * 3. Tắt timestamps.
+ * 4. Cập nhật $fillable, $hidden, và $casts để khớp với các cột trong CSDL.
+ */
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+
+    protected $table = 'Users';
+    protected $primaryKey = 'userId';
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'username',
         'email',
         'password',
+        'fullName',
+        'role',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
-        'remember_token',
+        // 'remember_token', // Cột này không tồn tại trong bảng Users
     ];
 
     /**
@@ -43,19 +55,8 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            // 'email_verified_at' => 'datetime', // Cột này không tồn tại
             'password' => 'hashed',
         ];
-    }
-
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
-    }
-
-    public function wishlist(): BelongsToMany
-    {
-        return $this->belongsToMany(ProductVariant::class, 'wishlists', 'user_id', 'variant_id')
-                    ->withTimestamps();
     }
 }

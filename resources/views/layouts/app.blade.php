@@ -3,29 +3,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', config('app.name', "Biti's"))</title>
-    @vite('resources/css/app.css')
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; background-color: #f9f9f9; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
-    </style>
+    <title>ShoesShop - @yield('title', 'Trang chủ')</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+
+    {{-- Sửa lỗi: Sử dụng Vite để tải CSS và JS một cách chính xác. --}}
+    {{-- Điều này sẽ sửa các lỗi hiển thị layout, bao gồm cả việc "mất" menu. --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 <body class="antialiased">
 
+    {{-- Cấu trúc layout chuẩn với các partials --}}
     @include('partials.header')
 
-    <main class="container" style="display: flex; padding-top: 2rem;">
-        {{-- Nhúng Menu vào cột bên trái --}}
-        @include('partials.menu')
+    @include('partials.menu')
 
-        {{-- Cột bên phải chứa nội dung chính của từng trang --}}
-        <div class="content-area" style="width: 80%;">
-            @yield('content')
-        </div>
+    {{-- Phần nội dung chính của từng trang sẽ được hiển thị ở đây --}}
+    <main>
+        @yield('content')
     </main>
 
     @include('partials.footer')
-    
-    @vite('resources/js/app.js')
+
 </body>
 </html>
