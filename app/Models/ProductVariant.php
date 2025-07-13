@@ -10,15 +10,14 @@ class ProductVariant extends Model
 {
     use HasFactory;
 
-    /**
-     * Chỉ định tên bảng trong cơ sở dữ liệu.
-     * @var string
-     */
-    protected $table = 'ProductVariants'; // <-- THÊM DÒNG NÀY ĐỂ SỬA LỖI
-
     protected $primaryKey = 'variantId';
     public $timestamps = false;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'productId',
         'colorId',

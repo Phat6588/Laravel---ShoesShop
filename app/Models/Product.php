@@ -12,13 +12,13 @@ class Product extends Model
     use HasFactory;
 
     protected $primaryKey = 'productId';
+    public $timestamps = false;
 
     /**
-     * Tắt chức năng timestamp tự động của Eloquent.
-     * @var bool
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
-    public $timestamps = false; // Thêm dòng này
-
     protected $fillable = [
         'name',
         'description',
@@ -33,7 +33,7 @@ class Product extends Model
 
     public function shoeType(): BelongsTo
     {
-        return $this->belongsTo(ShoeTypes::class, 'typeId');
+        return $this->belongsTo(ShoeType::class, 'typeId');
     }
 
     public function variants(): HasMany
