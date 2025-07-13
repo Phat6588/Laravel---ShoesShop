@@ -1,96 +1,160 @@
 @extends('layouts.app')
 
+@section('title', 'Tất cả sản phẩm - Biti\'s')
+
 @section('content')
-<div class="container mt-5">
-    <div class="row">
-        {{-- Sidebar Bộ lọc --}}
-        <aside class="col-lg-3">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="mb-0">Bộ lọc</h4>
+<style>
+    /* Bố cục chính */
+    .product-page-container {
+        display: flex;
+        flex-wrap: wrap; /* Cho phép xuống hàng trên màn hình nhỏ */
+        gap: 30px; /* Khoảng cách giữa sidebar và content */
+    }
+
+    /* Cột bộ lọc (Sidebar) */
+    .product-sidebar {
+        width: 100%; /* Chiếm toàn bộ chiều rộng trên màn hình nhỏ */
+        max-width: 250px; /* Giới hạn chiều rộng tối đa */
+        flex-shrink: 0; /* Không co lại khi không đủ không gian */
+    }
+
+    /* Khu vực nội dung chính (Lưới sản phẩm) */
+    .product-main-content {
+        flex-grow: 1; /* Tự động lấp đầy không gian còn lại */
+    }
+
+    /* Tùy chỉnh cho bộ lọc */
+    .filter-group { 
+        margin-bottom: 25px; 
+    }
+    .filter-group h4 { 
+        margin-top: 0; 
+        margin-bottom: 15px; 
+        border-bottom: 1px solid #eee; 
+        padding-bottom: 10px; 
+        font-size: 1.1em;
+    }
+    .filter-group ul { list-style: none; padding: 0; }
+    .filter-group ul li { margin-bottom: 8px; }
+    .filter-group ul li a { text-decoration: none; color: #333; }
+    .filter-group ul li a:hover { color: #d9534f; }
+    .filter-group ul li a.active { font-weight: bold; color: #d9534f; }
+
+    /* Tùy chỉnh cho các chấm màu */
+    .color-options {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .color-options a {
+        margin: 0 8px 8px 0;
+    }
+    .color-options span {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid #fff;
+        box-shadow: 0 0 0 1px #ccc;
+        transition: all 0.2s;
+    }
+    .color-options span.active {
+        box-shadow: 0 0 0 2px #d9534f;
+    }
+
+    /* Lưới sản phẩm */
+    .product-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+        gap: 20px; 
+    }
+    .product-card { 
+        background-color: #fff; 
+        border: 1px solid #e0e0e0; 
+        border-radius: 8px; 
+        overflow: hidden; 
+        text-align: center; 
+    }
+    .product-card img { 
+        width: 100%; 
+        height: 220px; 
+        object-fit: cover; 
+    }
+    .product-card-info { padding: 15px; }
+    .product-card-info h3 { 
+        font-size: 1rem; 
+        margin: 0 0 10px; 
+        height: 40px; /* Giữ chiều cao đồng nhất */
+        overflow: hidden;
+    }
+    .product-card-info .price { font-weight: bold; color: #d9534f; }
+
+    /* Phân trang */
+    .pagination { margin-top: 40px; display: flex; justify-content: center; }
+</style>
+
+<div class="product-page-container">
+
+    {{-- CỘT BỘ LỌC BÊN TRÁI --}}
+    <aside class="product-sidebar">
+        <h3>BỘ LỌC</h3>
+
+        <div class="filter-group">
+            <h4>Kiểu Giày</h4>
+            <ul>
+                <li><a href="{{ route('products', request()->except('type')) }}" class="{{ !request('type') ? 'active' : '' }}">Tất cả</a></li>
+                @foreach($shoeTypes as $type)
+                    <li><a href="{{ route('products', array_merge(request()->query(), ['type' => $type->name])) }}" class="{{ request('type') == $type->name ? 'active' : '' }}">{{ $type->name }}</a></li>
+                @endforeach
+            </ul>
+        </div>
+
+        <div class="filter-group">
+            <h4>Màu Sắc</h4>
+            <div class="color-options">
+                 @foreach($colors as $color)
+                    <a href="{{ route('products', array_merge(request()->query(), ['color' => $color->name])) }}">
+                        <span style="background-color: {{ $color->color_code }};" title="{{ $color->name }}" class="{{ request('color') == $color->name ? 'active' : '' }}"></span>
+                    </a>
+                @endforeach
+            </div>
+            @if(request('color'))
+                <a href="{{ route('products', request()->except('color')) }}" style="font-size: 0.8em; text-decoration: none; margin-top: 5px; display:inline-block;">Xóa bộ lọc màu</a>
+            @endif
+        </div>
+        
+        <div class="filter-group">
+            <h4>Mức Giá</h4>
+            <ul>
+                <li><a href="{{ route('products', array_merge(request()->query(), ['price_range' => '0-500000'])) }}" class="{{ request('price_range') == '0-500000' ? 'active' : '' }}">Dưới 500.000đ</a></li>
+                <li><a href="{{ route('products', array_merge(request()->query(), ['price_range' => '500000-1000000'])) }}" class="{{ request('price_range') == '500000-1000000' ? 'active' : '' }}">500.000đ - 1.000.000đ</a></li>
+                <li><a href="{{ route('products', array_merge(request()->query(), ['price_range' => '1000000'])) }}" class="{{ request('price_range') == '1000000' ? 'active' : '' }}">Trên 1.000.000đ</a></li>
+                @if(request('price_range'))
+                    <li><a href="{{ route('products', request()->except('price_range')) }}" style="font-size: 0.8em; text-decoration: none;">Xóa bộ lọc giá</a></li>
+                @endif
+            </ul>
+        </div>
+    </aside>
+
+    {{-- LƯỚI SẢN PHẨM BÊN PHẢI --}}
+    <div class="product-main-content">
+        <div class="product-grid">
+            @forelse($products as $product)
+            <div class="product-card">
+                <img src="{{ $product->variants->first()->image_url ?? 'https://via.placeholder.com/220x220.png?text=Biti\'s' }}" alt="{{ $product->name }}">
+                <div class="product-card-info">
+                    <h3>{{ $product->name }}</h3>
+                    <p class="price">{{ $product->variants->first() ? number_format($product->variants->first()->price, 0, ',', '.') . ' đ' : 'Liên hệ' }}</p>
                 </div>
-                <div class="card-body">
-                    <form action="{{ route('products.index') }}" method="GET">
-                        {{-- Sắp xếp theo giá --}}
-                        <div class="mb-4">
-                            <h5 class="mb-3">Sắp xếp theo giá</h5>
-                            <select name="sort_price" class="form-select">
-                                <option value="">Mặc định</option>
-                                <option value="asc" {{ request('sort_price') == 'asc' ? 'selected' : '' }}>Giá: Tăng dần</option>
-                                <option value="desc" {{ request('sort_price') == 'desc' ? 'selected' : '' }}>Giá: Giảm dần</option>
-                            </select>
-                        </div>
-
-                        {{-- Lọc theo màu sắc --}}
-                        <div class="mb-4">
-                            <h5 class="mb-3">Màu sắc</h5>
-                            @forelse ($colors as $color)
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="colors[]" value="{{ $color->id }}" id="color_{{ $color->id }}"
-                                        {{ in_array($color->id, request('colors', [])) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="color_{{ $color->id }}">
-                                        {{ $color->name }}
-                                    </label>
-                                </div>
-                            @empty
-                                <p class="text-muted small">Không có lựa chọn</p>
-                            @endforelse
-                        </div>
-
-                        {{-- Lọc theo kích thước --}}
-                        <div class="mb-4">
-                            <h5 class="mb-3">Kích thước</h5>
-                            @forelse ($sizes as $size)
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="sizes[]" value="{{ $size->id }}" id="size_{{ $size->id }}"
-                                        {{ in_array($size->id, request('sizes', [])) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="size_{{ $size->id }}">
-                                        {{ $size->name }}
-                                    </label>
-                                </div>
-                            @empty
-                                <p class="text-muted small">Không có lựa chọn</p>
-                            @endforelse
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Áp dụng</button>
-                            <a href="{{ route('products.index') }}" class="btn btn-outline-secondary">Xóa bộ lọc</a>
-                        </div>
-                    </form>
-                </div>
             </div>
-        </aside>
+            @empty
+                <p>Không tìm thấy sản phẩm nào phù hợp với tiêu chí của bạn.</p>
+            @endforelse
+        </div>
 
-        {{-- Danh sách sản phẩm --}}
-        <main class="col-lg-9">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-                @forelse ($products as $product)
-                    <div class="col">
-                        <div class="card h-100 shadow-sm">
-                            <img src="{{ $product->image ?? 'https://placehold.co/600x700/EFEFEF/AAAAAA&text=No+Image' }}" class="card-img-top" alt="{{ $product->name }}">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ $product->name }}</h5>
-                                <p class="card-text fw-bold text-danger">{{ number_format($product->price, 0, ',', '.') }} VNĐ</p>
-                                <a href="#" class="btn btn-outline-primary stretched-link">Xem chi tiết</a>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-12">
-                        <div class="alert alert-warning text-center">
-                            Không tìm thấy sản phẩm nào phù hợp với tiêu chí của bạn.
-                        </div>
-                    </div>
-                @endforelse
-            </div>
-
-            {{-- Phân trang --}}
-            <div class="d-flex justify-content-center mt-4">
-                {{-- Các link phân trang đã tự động chứa tham số filter nhờ withQueryString() --}}
-                {{ $products->links() }}
-            </div>
-        </main>
+        <div class="pagination">
+            {{ $products->links() }}
+        </div>
     </div>
 </div>
 @endsection

@@ -1,61 +1,32 @@
 @extends('layouts.app')
 
+{{-- Đặt tiêu đề cho trang --}}
+@section('title', 'Biti\'s - Nâng niu bàn chân Việt')
+
+{{-- Định nghĩa phần nội dung --}}
 @section('content')
 <div class="container">
-    {{-- Phần sản phẩm bán chạy nhất --}}
-    <section class="mt-5">
-        <h2 class="text-center mb-4">Sản Phẩm Bán Chạy</h2>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
-            @forelse ($bestSellers as $product)
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <img src="{{ $product->image ?? 'https://placehold.co/600x700/EFEFEF/AAAAAA&text=No+Image' }}" class="card-img-top" alt="{{ $product->name }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $product->name }}</h5>
-                            <p class="card-text fw-bold text-danger">{{ number_format($product->price, 0, ',', '.') }} VNĐ</p>
-                            <a href="#" class="btn btn-outline-primary stretched-link">Xem chi tiết</a>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="col-12">
-                    <p class="text-center text-muted">Hiện chưa có sản phẩm bán chạy nào.</p>
-                </div>
-            @endforelse
-        </div>
-        {{-- Phân trang cho sản phẩm bán chạy --}}
-        <div class="d-flex justify-content-center mt-4">
-            {{ $bestSellers->withQueryString()->links() }}
-        </div>
-    </section>
 
-    <hr class="my-5">
+    {{-- Banner chính --}}
+    <div class="banner" style="margin-bottom: 40px; text-align: center;">
+        <img src="https://file.hstatic.net/200000522597/file/web_-_desktop_8f44cf326d744b4c84a8a652a926a350.jpg" alt="Banner Biti's" style="width: 100%; height: auto; border-radius: 8px;">
+    </div>
 
-    {{-- Phần sản phẩm mới --}}
-    <section class="mb-5">
-        <h2 class="text-center mb-4">Sản Phẩm Mới</h2>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
-            @forelse ($newProducts as $product)
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <img src="{{ $product->image ?? 'https://placehold.co/600x700/EFEFEF/AAAAAA&text=No+Image' }}" class="card-img-top" alt="{{ $product->name }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $product->name }}</h5>
-                            <p class="card-text fw-bold text-danger">{{ number_format($product->price, 0, ',', '.') }} VNĐ</p>
-                            <a href="#" class="btn btn-outline-primary stretched-link">Xem chi tiết</a>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="col-12">
-                    <p class="text-center text-muted">Hiện chưa có sản phẩm mới nào.</p>
-                </div>
-            @endforelse
-        </div>
-        {{-- Phân trang cho sản phẩm mới --}}
-        <div class="d-flex justify-content-center mt-4">
-            {{ $newProducts->withQueryString()->links() }}
-        </div>
-    </section>
+    {{-- Khu vực sản phẩm nổi bật --}}
+    <h2 style="text-align: center; margin-bottom: 30px;">SẢN PHẨM NỔI BẬT</h2>
+    <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+        
+        {{-- Placeholder cho 4 sản phẩm --}}
+        @for ($i = 0; $i < 4; $i++)
+            <div class="product-card" style="background-color: #fff; border: 1px solid #ddd; border-radius: 8px; text-align: center; padding: 15px;">
+                <img src="https://via.placeholder.com/250x250.png?text=Biti's+Hunter" alt="Sản phẩm" style="width: 100%; height: auto; border-radius: 4px;">
+                <h3 style="font-size: 1.1em; margin: 15px 0 10px;">Biti's Hunter X 2024</h3>
+                <p style="color: #d9534f; font-weight: bold;">950,000 đ</p>
+                <a href="#" style="display: inline-block; margin-top: 10px; padding: 8px 20px; background-color: #337ab7; color: white; text-decoration: none; border-radius: 4px;">Xem chi tiết</a>
+            </div>
+        @endfor
+
+    </div>
+
 </div>
 @endsection
