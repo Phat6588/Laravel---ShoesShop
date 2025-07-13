@@ -4,40 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductVariant extends Model
 {
     use HasFactory;
-
-    protected $primaryKey = 'variantId';
+    protected $table = 'product_variants';
+    protected $primaryKey = 'id';
     public $timestamps = false;
+    protected $fillable = ['productId', 'colorId', 'sizeId', 'price', 'stock', 'image_url'];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'productId',
-        'colorId',
-        'sizeId',
-        'price',
-        'stock',
-        'image_url',
-    ];
-
-    public function product(): BelongsTo
+    // Một biến thể thuộc về một sản phẩm
+    public function product()
     {
         return $this->belongsTo(Product::class, 'productId');
     }
-    
-    public function color(): BelongsTo
+
+    // Một biến thể có một màu
+    public function color()
     {
         return $this->belongsTo(Color::class, 'colorId');
     }
 
-    public function size(): BelongsTo
+    // Một biến thể có một size
+    public function size()
     {
         return $this->belongsTo(Size::class, 'sizeId');
     }

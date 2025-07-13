@@ -1,14 +1,15 @@
-<header style="background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 10px 0;">
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-        {{-- Logo --}}
-        <a href="{{ url('/') }}">
-            <img src="https://file.hstatic.net/1000230642/file/logo-bitis_24a2c536ce4448239e443194a9d20c33.png" alt="Biti's Logo" style="height: 50px;">
+<header class="bg-light py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{{ route('home') }}" class="h2 text-dark text-decoration-none">
+            <i class="bi bi-shop"></i> ShoeStore
         </a>
-
-        {{-- Đăng nhập / Đăng ký --}}
-        <div>
-            <a href="/login" style="margin-right: 15px; text-decoration: none; color: #555;">Đăng Nhập</a>
-            <a href="/register" style="padding: 8px 15px; background-color: #d9534f; color: white; text-decoration: none; border-radius: 4px;">Đăng Ký</a>
+        <div class="d-flex align-items-center">
+            <div class="input-group me-3">
+                <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm...">
+                <button class="btn btn-outline-secondary" type="button"><i class="bi bi-search"></i></button>
+            </div>
+            <a href="#" class="btn btn-outline-primary me-2"><i class="bi bi-person-circle"></i> Đăng nhập</a>
+            <a href="#" class="btn btn-primary"><i class="bi bi-cart3"></i> Giỏ hàng <span class="badge bg-danger">0</span></a>
         </div>
     </div>
 </header>

@@ -8,16 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Brand extends Model
 {
     use HasFactory;
-
     protected $primaryKey = 'brandId';
-    public $timestamps = false;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-    ];
+    // Một thương hiệu có nhiều sản phẩm
+    public function products() {
+        return $this->hasMany(Product::class, 'brandId');
+    }
 }
