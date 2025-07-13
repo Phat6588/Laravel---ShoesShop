@@ -23,6 +23,14 @@ class Product extends Model
     protected $primaryKey = 'productId';
     public $timestamps = false;
 
+<<<<<<< HEAD
+=======
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+>>>>>>> parent of 685b8d3 (commit 21:44 09/07/2025)
     protected $fillable = [
         'name',
         'description',
@@ -44,8 +52,12 @@ class Product extends Model
      */
     public function shoeType()
     {
+<<<<<<< HEAD
         // foreignKey, ownerKey
         return $this->belongsTo(ShoeType::class, 'typeId', 'typeId');
+=======
+        return $this->belongsTo(ShoeType::class, 'typeId');
+>>>>>>> parent of 685b8d3 (commit 21:44 09/07/2025)
     }
 
     /**

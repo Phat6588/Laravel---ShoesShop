@@ -18,7 +18,6 @@ CREATE TABLE `ShoeTypes` (
 CREATE TABLE `Colors` (
   `colorId` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(50) NOT NULL UNIQUE,
-  `color_code` VARCHAR(y) NULL,
   PRIMARY KEY (`colorId`)
 );
 

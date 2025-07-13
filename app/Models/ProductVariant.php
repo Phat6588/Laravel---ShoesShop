@@ -19,10 +19,18 @@ class ProductVariant extends Model
 {
     use HasFactory;
 
+<<<<<<< HEAD
     protected $table = 'ProductVariants';
+=======
+>>>>>>> parent of 685b8d3 (commit 21:44 09/07/2025)
     protected $primaryKey = 'variantId';
     public $timestamps = false;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'productId',
         'colorId',
